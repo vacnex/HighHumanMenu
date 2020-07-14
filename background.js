@@ -18,12 +18,15 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
             var url = decodetext.join('')
             if (isUrl(url) == true) {
                 var link = url
-                chrome.contextMenus.create({
-                    title: "Go " + link, 
-                    contexts:["selection"], 
-                    id : "hextdecode",
-                    parentId: "MainMenu"
-                });
+                chrome.contextMenus.remove("hextdecode",function () {  
+                    chrome.contextMenus.create({
+                        title: "Go " + link, 
+                        contexts:["selection"], 
+                        id : "hextdecode",
+                        parentId: "MainMenu"
+                    });
+                })
+                
                 
                 
             }
