@@ -33,7 +33,6 @@ function accessUrl(info,tab) {
         }
     });
 }
-
 function h2t(selectedhex) {
     var decodetext =[];
     for (let i = 0; i < selectedhex.length; i+=2) {
@@ -42,8 +41,6 @@ function h2t(selectedhex) {
     var url = decodetext.join('')
     return url
 }
-
-
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     var url = h2t(request.SelectedText)
     if (isUrl(url) == true) {
@@ -55,13 +52,18 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         if (link.length > 1)
         {
             chrome.extension.getBackgroundPage().console.log(link);
+            chrome.storage.sync.set({'URLs': link});
+            chrome.contextMenus.update("hexdecode",{
+                title: "Click on extension to view multiple url",
+                enabled : false,
+            })
         }
         else
         {
+            chrome.storage.sync.set({'URLs': ''});
             chrome.extension.getBackgroundPage().console.log('one url '+link);
             chrome.storage.sync.get('NameorURL',function(res) {
                 var isNameorURL  = res.NameorURL
-                chrome.extension.getBackgroundPage().console.log(isNameorURL);
                 if (!isNameorURL) {
                     chrome.contextMenus.update("hexdecode",{
                         title: "go " + link,
@@ -77,7 +79,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
                 }
             });
         }
-        
     }
     if (isUrl(url) == false)
     {
@@ -85,7 +86,6 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
             title: "pls select hex",
             enabled : false,
         })
-        chrome.extension.getBackgroundPage().console.log('not link');
     }
 });
 
