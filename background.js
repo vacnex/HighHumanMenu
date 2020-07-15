@@ -22,8 +22,18 @@ chrome.contextMenus.create({
 function accessUrl(info,tab) {
     var selected = info.selectionText
     var url = h2t(selected)
-    chrome.windows.create({"url": url, "incognito": true})
+    chrome.storage.sync.get('IncognitoMode',function(res) {
+        var isIncognitoMode  = res.IncognitoMode
+        chrome.extension.getBackgroundPage().console.log(isIncognitoMode);
+        if (!isIncognitoMode) {
+            chrome.tabs.create({"url": url})
+        }
+        else{
+            chrome.windows.create({"url": url, "incognito": true})
+        }
+    });
 }
+
 function h2t(selectedhex) {
     var decodetext =[];
     for (let i = 0; i < selectedhex.length; i+=2) {
@@ -49,11 +59,23 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         else
         {
             chrome.extension.getBackgroundPage().console.log('one url '+link);
-            
-                chrome.contextMenus.update("hexdecode",{
-                    title: "go " + link,
-                    enabled : true,
-                })
+            chrome.storage.sync.get('NameorURL',function(res) {
+                var isNameorURL  = res.NameorURL
+                chrome.extension.getBackgroundPage().console.log(isNameorURL);
+                if (!isNameorURL) {
+                    chrome.contextMenus.update("hexdecode",{
+                        title: "go " + link,
+                        enabled : true,
+                    })
+                }
+                else{
+                    var hostname = new URL(link);
+                    chrome.contextMenus.update("hexdecode",{
+                        title: "go " + hostname.hostname,
+                        enabled : true,
+                    })
+                }
+            });
         }
         
     }
