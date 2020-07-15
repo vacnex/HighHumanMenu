@@ -17,5 +17,7 @@
     "background": {
         "scripts": ["background.js"]
     },
-    "browser_action": {}
+    "browser_action": {
+        "default_popup": "assets/settings.html"
+    }
 }
