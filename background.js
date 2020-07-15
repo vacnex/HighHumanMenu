@@ -19,6 +19,27 @@ chrome.contextMenus.create({
     parentId: "MainMenu",
     onclick: accessUrl
 });
+chrome.contextMenus.create({
+    title: "Not nhentai number",
+    contexts:["selection"], 
+    enabled : false,
+    id : "nhentai",
+    parentId: "MainMenu",
+    onclick: accessNhentai
+});
+function accessNhentai(info,tab) {
+    var selected = info.selectionText
+    chrome.storage.sync.get('IncognitoMode',function(res) {
+        var isIncognitoMode  = res.IncognitoMode
+        chrome.extension.getBackgroundPage().console.log(isIncognitoMode);
+        if (!isIncognitoMode) {
+            chrome.tabs.create({"url": `https://nhentai.net/g/${selected}`})
+        }
+        else{
+            chrome.windows.create({"url": `https://nhentai.net/g/${selected}`, "incognito": true})
+        }
+    });
+}
 function accessUrl(info,tab) {
     var selected = info.selectionText
     var url = h2t(selected)
@@ -41,9 +62,18 @@ function h2t(selectedhex) {
     var url = decodetext.join('')
     return url
 }
+function isNhentaiCode(selectedNumber) {
+    var its 
+    if (!isNaN(selectedNumber)) {
+        if (selectedNumber.length <= 6) {
+            its = true
+        } else its = false
+    } else its = false
+    return its
+}
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     var url = h2t(request.SelectedText)
-    if (isUrl(url) == true) {
+    if (isUrl(url)) {
         var link = url
         var linkgroup = []
         for(let i of link.split(/[\n\s]/))
@@ -51,7 +81,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         link = linkgroup;
         if (link.length > 1)
         {
-            chrome.extension.getBackgroundPage().console.log(link);
+            chrome.extension.getBackgroundPage().console.log('multiple url '+link);
             chrome.storage.sync.set({'URLs': link});
             chrome.contextMenus.update("hexdecode",{
                 title: "Click on extension to view multiple url",
@@ -80,10 +110,22 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
             });
         }
     }
-    if (isUrl(url) == false)
+    if (!isUrl(url))
     {
         chrome.contextMenus.update("hexdecode",{
             title: "pls select hex",
+            enabled : false,
+        })
+    }
+    if (isNhentaiCode(request.SelectedText)) {
+        chrome.contextMenus.update("nhentai",{
+            title: "Go nhentai.net/g/" + request.SelectedText,
+            enabled : true,
+        })
+    }
+    if (!isNhentaiCode(request.SelectedText)) {
+        chrome.contextMenus.update("nhentai",{
+            title: "Not nhentai number",
             enabled : false,
         })
     }
