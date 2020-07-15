@@ -7,12 +7,12 @@ const isUrl = (str) => {
     }
 }
 chrome.contextMenus.create({
-    title: "Hex Convert", 
+    title: "HighHuman Menu", 
     contexts:["selection"],
     id : "MainMenu"
 });
 chrome.contextMenus.create({
-    title: "pls select hex",
+    title: "Pls select hex",
     contexts:["selection"], 
     enabled : false,
     id : "hexdecode",
