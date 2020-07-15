@@ -10,26 +10,18 @@
 <body>
     <div class="container">
         <h3 class="text-center">SETTINGS</h3>
-        <div class="row">
-            <div class="col">
-                <p>Incognito Mode:</p>
-            </div>
-            <div class="col">
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="IncognitoON" value="1" checked>
-                    <label class="form-check-label" >ON</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="IncognitoOFF" value="0">
-                    <label class="form-check-label" >OFF</label>
-                </div>
-            </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="customSwitch1">
+            <label class="custom-control-label" for="customSwitch1">Use Incognito Mode </label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="customSwitch1">
+            <label class="custom-control-label" for="customSwitch1">Display Name Instead of URL </label>
         </div>
         <div>
-            <p>Link List</p>
+            <p style="margin-top: 20px;">Link List</p>
             <textarea id="textarea" rows="3" style="margin-top: 0px; margin-bottom: 0px; height: 115px; width: 290px;"></textarea>
         </div>
-
     </div>
     <script src="js/jquery.min.js"></script>
     <script src="js/popper.min.js"></script>
