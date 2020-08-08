@@ -6,6 +6,14 @@ const isUrl = (str) => {
         return false;  
     }
 }
+function copyToClipboard (str){
+    document.oncopy = function(event) {
+        event.clipboardData.setData("Text", str);
+        event.preventDefault();
+    };
+    document.execCommand("Copy");
+    document.oncopy = undefined;
+}
 chrome.contextMenus.create({
     title: "HighHuman Menu", 
     contexts:["selection"],
@@ -92,6 +100,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         {
             chrome.storage.sync.set({'URLs': ''});
             chrome.extension.getBackgroundPage().console.log('one url '+link);
+            copyToClipboard(link)
             chrome.storage.sync.get('NameorURL',function(res) {
                 var isNameorURL  = res.NameorURL
                 if (!isNameorURL) {
@@ -130,5 +139,3 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         })
     }
 });
-
-

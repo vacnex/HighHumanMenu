@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "HighHuman Menu",
-    "version": "0.6",
+    "version": "0.7",
     "icons": {
         "16": "assets/Icon/16.png",
         "48": "assets/Icon/48.png",
@@ -10,7 +10,8 @@
     "permissions": [
         "contextMenus",
         "tabs",
-        "storage"
+        "storage",
+        "clipboardWrite"
     ],
     "content_scripts": [
         {
