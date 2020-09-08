@@ -105,14 +105,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
                 var isNameorURL  = res.NameorURL
                 if (!isNameorURL) {
                     chrome.contextMenus.update("hexdecode",{
-                        title: "go " + link,
+                        title: "Open " + link,
                         enabled : true,
                     })
                 }
                 else{
                     var hostname = new URL(link);
                     chrome.contextMenus.update("hexdecode",{
-                        title: "go " + hostname.hostname,
+                        title: "Open " + hostname.hostname,
                         enabled : true,
                     })
                 }
@@ -128,7 +128,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     }
     if (isNhentaiCode(request.SelectedText)) {
         chrome.contextMenus.update("nhentai",{
-            title: "Go nhentai.net/g/" + request.SelectedText,
+            title: "Open nhentai.net/g/" + request.SelectedText,
             enabled : true,
         })
     }
