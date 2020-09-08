@@ -18,15 +18,21 @@ chrome.storage.sync.get('URLs',function(res) {
     var link = res.URLs
     var newline = '\n'
     var newtext = ''
-    $('.linknum').html('Số link: '+ link.length);
-    for (let i = 0; i < link.length; i++) {
-        newtext = newtext.concat(link[i].concat(newline));
+    if (link) {
+        $('.linknum').html('Link: '+ link.length);
+        for (let i = 0; i < link.length; i++) {
+            newtext = newtext.concat(link[i].concat(newline));
+        }
+        chrome.extension.getBackgroundPage().console.log(newtext);
+        $("#textarea").val(newtext);
     }
-    chrome.extension.getBackgroundPage().console.log(newtext);
-    $("#textarea").val(newtext);
+    else{
+        $('.linknum').html('Link: 0');
+    }
+    
 });
 $('#clear').click(function (e) { 
     chrome.storage.sync.set({'URLs': ''});
-    $('.linknum').html('Số link: 0');
+    $('.linknum').html('Link: 0');
     $("#textarea").val('');
 });
