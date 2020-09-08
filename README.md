@@ -7,4 +7,5 @@ HighHuman Menu is a Chrome extension that allows you to decode any hex code and 
 
 # Knownbug
 
-Context menu cannot update when right click directly on hex code (MacOs)
+* Context menu cannot update when right click directly on hex code (MacOs)
+* Can not get select hex code in new facebook messages UI
