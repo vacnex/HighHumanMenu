@@ -62,8 +62,9 @@ function accessUrl(info,tab) {
         }
     });
 }
-function h2t(selectedhex) {
+function h2t(slctedhex) {
     var decodetext =[];
+    var selectedhex = slctedhex.toLowerCase().replace('2c','20').replace('3b','20');
     for (let i = 0; i < selectedhex.length; i+=2) {
         decodetext.push(String.fromCharCode(parseInt(selectedhex.replace(/\s/g, "").substring(i,i+2), 16)))
     }
