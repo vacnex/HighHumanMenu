@@ -90,7 +90,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         link = linkgroup;
         if (link.length > 1)
         {
-            chrome.extension.getBackgroundPage().console.log('multiple url '+link);
+            chrome.extension.getBackgroundPage().console.log(link.length.toString()+' validity link: '+link);
             chrome.storage.sync.set({'URLs': link});
             chrome.contextMenus.update("hexdecode",{
                 title: "Click on extension to view multiple url",
@@ -100,7 +100,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         else
         {
             chrome.storage.sync.set({'URLs': ''});
-            chrome.extension.getBackgroundPage().console.log('one url '+link);
+            chrome.extension.getBackgroundPage().console.log(link.length.toString()+' validity link: '+link);
             copyToClipboard(link)
             chrome.storage.sync.get('NameorURL',function(res) {
                 var isNameorURL  = res.NameorURL
