@@ -1,11 +1,3 @@
-const isUrl = (str) => {
-    try {
-        new URL(str);
-        return true;
-    } catch  {
-        return false;  
-    }
-}
 function copyToClipboard (str){
     document.oncopy = function(event) {
         event.clipboardData.setData("Text", str);
@@ -20,12 +12,12 @@ chrome.contextMenus.create({
     id : "MainMenu"
 });
 chrome.contextMenus.create({
-    title: "Pls select hex",
-    contexts:["selection"], 
-    enabled : false,
-    id : "hexdecode",
-    parentId: "MainMenu",
-    onclick: accessUrl
+    title: 'Pls select hex',
+    contexts: ['selection'],
+    enabled: false,
+    id: 'hexdecode',
+    parentId: 'MainMenu',
+    onclick: accessUrl,
 });
 chrome.contextMenus.create({
     title: "Not nhentai number",
@@ -35,6 +27,7 @@ chrome.contextMenus.create({
     parentId: "MainMenu",
     onclick: accessNhentai
 });
+var seltext = null;
 function accessNhentai(info,tab) {
     var selected = info.selectionText
     chrome.storage.sync.get('IncognitoMode',function(res) {
@@ -49,27 +42,16 @@ function accessNhentai(info,tab) {
     });
 }
 function accessUrl(info,tab) {
-    var selected = info.selectionText
-    var url = h2t(selected)
-    chrome.storage.sync.get('IncognitoMode',function(res) {
-        var isIncognitoMode  = res.IncognitoMode
-        chrome.extension.getBackgroundPage().console.log(isIncognitoMode);
-        if (!isIncognitoMode) {
-            chrome.tabs.create({"url": url})
-        }
-        else{
-            chrome.windows.create({"url": url, "incognito": true})
-        }
-    });
-}
-function h2t(slctedhex) {
-    var decodetext =[];
-    var selectedhex = slctedhex.toLowerCase().replace('2c','20').replace('3b','20');
-    for (let i = 0; i < selectedhex.length; i+=2) {
-        decodetext.push(String.fromCharCode(parseInt(selectedhex.replace(/\s/g, "").substring(i,i+2), 16)))
-    }
-    var url = decodetext.join('')
-    return url
+        chrome.storage.sync.get('IncognitoMode', function (res) {
+            var isIncognitoMode = res.IncognitoMode
+            chrome.extension.getBackgroundPage().console.log(isIncognitoMode);
+            if (!isIncognitoMode) {
+                chrome.tabs.create({ url: window.seltext });
+            }
+            else {
+                chrome.windows.create({ url: window.seltext, incognito: true });
+            }
+        });
 }
 function isNhentaiCode(selectedNumber) {
     var its 
@@ -80,52 +62,36 @@ function isNhentaiCode(selectedNumber) {
     } else its = false
     return its
 }
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-    var url = h2t(request.SelectedText)
-    if (isUrl(url)) {
-        var link = url
-        var linkgroup = []
-        for(let i of link.split(/[\n\s]/))
-            i && linkgroup.push(i);
-        link = linkgroup;
-        if (link.length > 1)
-        {
-            chrome.extension.getBackgroundPage().console.log(link.length.toString()+' validity link: '+link);
-            chrome.storage.sync.set({'URLs': link});
-            chrome.contextMenus.update("hexdecode",{
-                title: "Click on extension to view multiple url",
-                enabled : false,
-            })
-        }
-        else
-        {
-            chrome.storage.sync.set({'URLs': ''});
-            chrome.extension.getBackgroundPage().console.log(link.length.toString()+' validity link: '+link);
-            copyToClipboard(link)
-            chrome.storage.sync.get('NameorURL',function(res) {
-                var isNameorURL  = res.NameorURL
-                if (!isNameorURL) {
-                    chrome.contextMenus.update("hexdecode",{
-                        title: "Open " + link,
-                        enabled : true,
-                    })
-                }
-                else{
-                    var hostname = new URL(link);
-                    chrome.contextMenus.update("hexdecode",{
-                        title: "Open " + hostname.hostname,
-                        enabled : true,
-                    })
-                }
-            });
-        }
-    }
-    if (!isUrl(url))
-    {
+chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
+    var url = request.urls;
+    if (Array.isArray(url)) {
+        chrome.storage.sync.set({ URLs: url });
+        chrome.extension.getBackgroundPage().console.log(url);
         chrome.contextMenus.update("hexdecode",{
-            title: "pls select hex",
+            title: "Click on extension to view multiple url",
             enabled : false,
         })
+    }
+    else {
+        window.seltext = url;
+        chrome.storage.sync.set({ URLs: '' });
+        chrome.extension.getBackgroundPage().console.log(url);
+        copyToClipboard(url);
+        chrome.storage.sync.get('NameorURL', function (res) {
+            var isNameorURL = res.NameorURL;
+            if (!isNameorURL) {
+                chrome.contextMenus.update('hexdecode', {
+                    title: 'Open ' + url,
+                    enabled: true,
+                });
+            } else {
+                var hostname = new URL(url);
+                chrome.contextMenus.update('hexdecode', {
+                    title: 'Open ' + hostname.hostname,
+                    enabled: true,
+                });
+            }
+        });
     }
     if (isNhentaiCode(request.SelectedText)) {
         chrome.contextMenus.update("nhentai",{
