@@ -30,6 +30,7 @@ chrome.contextMenus.create({
 var seltext = null;
 function accessNhentai(info,tab) {
     var selected = info.selectionText
+    chrome.extension.getBackgroundPage().console.log(selected);
     chrome.storage.sync.get('IncognitoMode',function(res) {
         var isIncognitoMode  = res.IncognitoMode
         chrome.extension.getBackgroundPage().console.log(isIncognitoMode);
@@ -53,56 +54,63 @@ function accessUrl(info,tab) {
             }
         });
 }
-function isNhentaiCode(selectedNumber) {
-    var its 
-    if (!isNaN(selectedNumber)) {
-        if (selectedNumber.length <= 6) {
-            its = true
-        } else its = false
-    } else its = false
-    return its
-}
+// function isNhentaiCode(selectedNumber) {
+//     var its 
+//     if (!isNaN(selectedNumber)) {
+//         if (selectedNumber.length <= 6) {
+//             its = true
+//         } else its = false
+//     } else its = false
+//     return its
+// }
 chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
     var url = request.urls;
-    if (Array.isArray(url)) {
-        chrome.storage.sync.set({ URLs: url });
-        chrome.extension.getBackgroundPage().console.log(url);
-        chrome.contextMenus.update("hexdecode",{
-            title: "Click on extension to view multiple url",
-            enabled : false,
-        })
-    }
-    else {
-        window.seltext = url;
-        chrome.storage.sync.set({ URLs: '' });
-        chrome.extension.getBackgroundPage().console.log(url);
-        copyToClipboard(url);
-        chrome.storage.sync.get('NameorURL', function (res) {
-            var isNameorURL = res.NameorURL;
-            if (!isNameorURL) {
-                chrome.contextMenus.update('hexdecode', {
-                    title: 'Open ' + url,
-                    enabled: true,
-                });
-            } else {
-                var hostname = new URL(url);
-                chrome.contextMenus.update('hexdecode', {
-                    title: 'Open ' + hostname.hostname,
-                    enabled: true,
-                });
-            }
+    if (url != null) {
+        if (Array.isArray(url)) {
+            chrome.storage.sync.set({ URLs: url });
+            chrome.extension.getBackgroundPage().console.log(url);
+            chrome.contextMenus.update('hexdecode', {
+                title: 'Click on extension to view multiple url',
+                enabled: false,
+            });
+        } else {
+            window.seltext = url;
+            chrome.storage.sync.set({ URLs: '' });
+            chrome.extension.getBackgroundPage().console.log(url);
+            copyToClipboard(url);
+            chrome.storage.sync.get('NameorURL', function (res) {
+                var isNameorURL = res.NameorURL;
+                if (!isNameorURL) {
+                    chrome.contextMenus.update('hexdecode', {
+                        title: 'Open ' + url,
+                        enabled: true,
+                    });
+                } else {
+                    var hostname = new URL(url);
+                    chrome.contextMenus.update('hexdecode', {
+                        title: 'Open ' + hostname.hostname,
+                        enabled: true,
+                    });
+                }
+            });
+        }
+    } else {
+        chrome.contextMenus.update('hexdecode', {
+            enabled: false,
         });
     }
-    if (isNhentaiCode(request.SelectedText)) {
-        chrome.contextMenus.update("nhentai",{
-            title: "Open nhentai.net/g/" + request.SelectedText,
-            enabled : true,
-        })
-    }
-    if (!isNhentaiCode(request.SelectedText)) {
-        chrome.contextMenus.update("nhentai",{
-            title: "Not nhentai number",
-            enabled : false,
-        })
+    if (request.isNhentaiCode) {
+        chrome.contextMenus.update('nhentai', {
+            title: 'Open nhentai.net/g/' + request.hentNum,
+            enabled: true,
+        });
+        chrome.contextMenus.update('hexdecode', {
+            enabled: false,
+        });
+    } else {
+        chrome.contextMenus.update('nhentai', {
+            title: 'Not nhentai number',
+            enabled: false,
+        });
     }
 });

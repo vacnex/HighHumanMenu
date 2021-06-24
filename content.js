@@ -35,27 +35,32 @@ document.addEventListener("mousedown", function (event) {
     if (event.button !== 2) {
         return false;
     }
-
     var selected = window.getSelection().toString().trim().replace(/\s/g, '');
-    list = hex_to_ascii(selected)
-        .replace(/(\r\n|\n|\r)/gm, '')
-        .replace(/\0/g, '')
-        .split(/(?=http)/);
-    console.log(list)
-    if (list.length == 1) {
-        if (isUrl(list[0])) {
-            if (event.button == 2 && list != '') {
-                chrome.extension.sendMessage({
-                    urls: list.toString(),
-                });
-            }
-        }
+    if (!isNaN(parseInt(selected)) && selected.length <= 6) {
+        chrome.extension.sendMessage({
+            hentNum: selected,
+            isNhentaiCode: true,
+        });
     } else {
-        if (isUrlList(list)) {
-            if (event.button == 2 && list != '') {
-                chrome.extension.sendMessage({
-                    urls: list
-                });
+        list = hex_to_ascii(selected)
+            .replace(/(\r\n|\n|\r)/gm, '')
+            .replace(/\0/g, '')
+            .split(/(?=http)/);
+        if (list.length == 1) {
+            if (isUrl(list[0])) {
+                if (event.button == 2 && list != '') {
+                    chrome.extension.sendMessage({
+                        urls: list.toString(),
+                    });
+                }
+            }
+        } else {
+            if (isUrlList(list)) {
+                if (event.button == 2 && list != '') {
+                    chrome.extension.sendMessage({
+                        urls: list,
+                    });
+                }
             }
         }
     }
