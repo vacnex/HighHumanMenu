@@ -45,6 +45,7 @@ document.addEventListener("mousedown", function (event) {
         list = hex_to_ascii(selected)
             .replace(/(\r\n|\n|\r)/gm, '')
             .replace(/\0/g, '')
+            .replace(/[^ -~]+/g, '')
             .split(/(?=http)/);
         if (list.length == 1) {
             if (isUrl(list[0])) {
